@@ -1,39 +1,99 @@
- <html>
- <head>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.3/p5.js"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/addons/p5.sound.js"></script>
-   <script>
-    
-    // an example using sound (which is not required for this assignment)
+<html>
 
-    var sound;
-    
-    function preload() 
-    {
-      sound = loadSound('pop.mp3');
-    }
-    
-    function setup() 
-    {
-       createCanvas(800, 600);
-       textAlign(CENTER);
-       fill(100);
-       noStroke();
-       text("Click to play sound", width/2, height/2);
-    }
+<head>
+    <meta charset="UTF-8">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.6/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.16/addons/p5.sound.js"></script>
+    <script>
+        var x = [];
+        var y = [];
+        var radius = 10;
+        var xspd = [];
+        var yspd = [];
+        var notes = [note1];
+        var b = 255;
+        function preload() {
 
-    function draw() 
-    {
-     
-    }
-    
-    function mouseClicked() 
-    { 
-       sound.play();
-       background(random(255), random(255), random(255));
-    }
 
-   </script>
- </head>
- </html>
+            note1 = loadImage("rednote.png");
+            click = loadSound("Click.wav");
+            drumb1 = loadSound("drumb1.m4a");
+            soundDo = loadSound("do.mp3");
+            soundMi = loadSound("mi.mp3");
+            soundSo = loadSound("so.mp3");
+            soundDodo = loadSound("dodo.mp3");
+            bgimg = loadImage("mixyourownmusic-01.png");
+            amplitude = new p5.Amplitude();
 
+        }
+
+        function setup() {
+
+            createCanvas(600, 600);
+          
+            drumb1.loop();
+        }
+
+        // set the initial x,y speed
+        function mouseClicked() {
+            x.push(mouseX);
+            y.push(mouseY);
+            xspd.push(random(1, 6));
+            yspd.push(random(1, 6));
+        }
+
+
+        function draw() {
+
+            background(250, 250, 250);
+            image(bgimg , 150,250, 337,100);
+            
+            for (var i = 0; i < x.length; i++) {
+
+                var level = amplitude.getLevel();
+                var size = map(level, 0, 1, 50, 150);
+                var colorSize = map(level, 0, 0.5, 1, 20, 80, 150);
+
+                // ellipse(x[i], y[i], size, size);
+                image(note1, x[i], y[i], size, size);
+
+
+
+                // update the position based on speed
+                x[i] = x[i] + xspd[i];
+                y[i] = y[i] + yspd[i];
+
+                //left wall
+                if (xspd[i] < 0 && x[i] <= 0) {
+                    xspd[i] = xspd[i] * -1;
+                    background(200, 255, 20);
+                    click.play();
+                }
+
+                //right wall
+                if (xspd[i] > 0 && x[i] >= width - 50) {
+                    xspd[i] = xspd[i] * -1;
+                    background(0, 200, 20);
+                    soundSo.play();
+                }
+
+                // check collision with top/bottom wall
+                if (yspd[i] > 0 && y[i] >= height - 50){
+                    yspd[i] = yspd[i] * -1;
+                    background(255, 51, 153);
+                    soundDo.play();
+                }
+
+                if (yspd[i] < 0 && y[i] <= radius) {
+                    yspd[i] = yspd[i] * -1;
+                    background(32, 32, 32);
+                    soundMi.play();
+                }
+
+
+            }
+        }
+    </script>
+</head>
+
+</html>
